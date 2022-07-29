@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../static/layui/css/layui.css" tppabs="http://res.layui.com/layui/dist/css/layui.css"
+        media="all">
+</head>
+<style>
+    body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .outer {
+        height: 100%;
+        padding: 150px 0 0;
+        box-sizing: border-box;
+        position: relative;
+    }
+</style>
+
+<body>
+    <div style="text-align: center;" class="outer">
+        <div class="layui-inline" style="margin-left:-100px;">
+            <form class="layui-form" action="" lay-filter="out_school" id="out_school">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">任务</label>
+                    <div class="layui-input-block">
+                        <select name="interest" lay-filter="aihao">
+                            <option value="0"></option>
+                            <option value="1">打卡</option>
+                            <option value="2">报备</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="check_in" style="display: none;">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">温度</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="temperature" id="temperature" lay-verify="title" autocomplete="off"
+                                placeholder="请输入温度" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div id="report" style="display: none;">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">电话</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="phonenumber" id="phonenumber" lay-verify="title" autocomplete="off"
+                                placeholder="请输入手机号" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">理由</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="reason" id="reason" lay-verify="title" autocomplete="off"
+                                placeholder="请输入理由" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">去向</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="direction" id="direction" lay-verify="title" autocomplete="off"
+                                placeholder="请输入去向" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="button" class="layui-btn" lay-submit="" lay-filter="demo1"
+                            id="submit_button">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="../static/layui/layui.js"></script>
+    <!-- <script type="text/javascript" src="../static/jquery-3.1.0.min.js"></script> -->
+    <script>
+        const check_in = document.querySelector('#check_in')
+        const report = document.querySelector('#report')
+        layui.use(['form', 'layer'], function () {
+            var form = layui.form
+                , layer = layui.layer
+                , layedit = layui.layedit
+                , $ = layui.$;
+            form.on('select(aihao)', function (data) {
+                if (data.value == '1') {
+                    check_in.style.display = 'block'
+                    report.style.display = 'none'
+                    document.getElementById("temperature").value = ""
+                }
+                if (data.value == '2') {
+                    check_in.style.display = 'none'
+                    report.style.display = 'block'
+                    document.getElementById("phonenumber").value = ""
+                    document.getElementById("reason").value = ""
+                    document.getElementById("direction").value = ""
+                }
+            });
+            //监听提交
+            form.on('submit(demo1)', function (data) {
+                $('#submit_button').addClass('layui-btn-danger');
+                $('#submit_button').attr("disabled", true);
+                $('#submit_button').text("(NO!)");
+                // layer.open({
+                //     title: '提醒',
+                //     content: '提交成功'
+                // });
+                $.ajax({
+                    url: '/index',
+                    type: 'GET',
+                    data: data.field,
+                    dataType: 'json',
+                    async: true,
+                    success: function (data) {
+                        layer.alert(data['msg'], {
+                            title: '结果'
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+        // $("#submit_button").click(function (data) {
+        //     set_time()
+        //     $.ajax({
+        //         url: '/index',
+        //         type: 'GET',
+        //         data: data.field,
+        //         dataType: 'json',
+        //         async: false,
+        //         success: function (data) {
+        //             layer.alert(data['msg'], {
+        //                 title: '结果'
+        //             });
+        //         }
+        //     });
+        // });
+        // var countdown = 60;
+        // function set_time() {
+        //     var btn = $("#submit_button");
+        //     if (countdown == 0) {
+        //         btn.removeAttr("disabled");
+        //         btn.text("获取验证码");
+        //         countdown = 60;
+        //         return;
+        //     } else {
+        //         btn.attr("disabled", true);
+        //         btn.text("重新发送(" + countdown + ")");
+        //         countdown--;
+        //     }
+        //     setTimeout(function () {
+        //         set_time();
+        //     }, 1000)
+        // }
+    </script>
+</body>
+
+</html>
